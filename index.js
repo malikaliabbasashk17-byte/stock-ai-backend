@@ -1,37 +1,43 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// Test Route
+// 1. Home / Test Route (Yeh ab 100% chalega bina crash kiye)
 app.get('/', (req, res) => {
-    res.send('Stock AI Backend Vercel par sahi kaam kar raha hai!');
+    res.json({ 
+        status: "success", 
+        message: "Stock AI Backend Vercel par live chal raha hai!" 
+    });
 });
 
-// Main API Route
+// 2. Market Data Route
 app.get('/api/market-data', async (req, res) => {
     try {
-        const apiKey = process.env.STOCK_API_KEY;
+        const apiKey = process.env.STOCK_API_KEY || "no_key";
+        
+        // Agar abhi dummy URL hai to crash na ho, isliye static response check
+        if (!process.env.STOCK_API_KEY || process.env.STOCK_API_KEY === "no_key") {
+            return res.json({ 
+                message: "Backend connect ho gaya hai! Jab aap real API URL aur Key dalenge to data show ho jayega.",
+                testData: { index: "KSE-100", points: "78,000", change: "+1.2%" }
+            });
+        }
+
+        // Jab aap apni real API ka URL lagayenge, to neeche wali lines chalengi:
         const response = await axios.get(`https://api.example.com/stocks?apikey=${apiKey}`);
         res.json(response.data);
+
     } catch (error) {
-        console.error("Error fetching data:", error.message);
-        res.status(500).json({ error: 'API se data fetch karne mein masla hua hai.' });
+        res.status(500).json({ 
+            error: 'API Connection issue', 
+            details: error.message 
+        });
     }
 });
 
-// Server Start (Local testing ke liye)
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server port ${PORT} par chal raha hai`);
-    });
-}
-
-// Vercel ke liye export lazmi hai
 module.exports = app;
