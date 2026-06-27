@@ -1,8 +1,13 @@
 {
   "name": "stock-ai-backend",
   "version": "1.0.0",
-  "main": "api/analyze.js",
+  "description": "Stock AI Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "@google/generative-ai": "^0.1.0"
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
   }
 }
