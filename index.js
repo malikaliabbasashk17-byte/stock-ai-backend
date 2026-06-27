@@ -6,24 +6,19 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware: Is se aapka blog is backend se data mangwa sakega
 app.use(cors());
 app.use(express.json());
 
-// 1. Test Route: Yeh check karne ke liye ke server chal raha hai
+// Test Route
 app.get('/', (req, res) => {
-    res.send('Stock AI Backend sahi kaam kar raha hai!');
+    res.send('Stock AI Backend Vercel par sahi kaam kar raha hai!');
 });
 
-// 2. Main API Route: Jo aapke blog par market data bhejay ga
+// Main API Route
 app.get('/api/market-data', async (req, res) => {
     try {
         const apiKey = process.env.STOCK_API_KEY;
-        
-        // Yahan 'https://api.example.com/stocks' ki jagah apni real stock API ka URL aye ga
         const response = await axios.get(`https://api.example.com/stocks?apikey=${apiKey}`);
-        
-        // Yeh line aapke blog (frontend) ko data send karegi
         res.json(response.data);
     } catch (error) {
         console.error("Error fetching data:", error.message);
@@ -31,7 +26,12 @@ app.get('/api/market-data', async (req, res) => {
     }
 });
 
-// Server Start karne ke liye
-app.listen(PORT, () => {
-    console.log(`Server port ${PORT} par chal raha hai`);
-});
+// Server Start (Local testing ke liye)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server port ${PORT} par chal raha hai`);
+    });
+}
+
+// Vercel ke liye export lazmi hai
+module.exports = app;
